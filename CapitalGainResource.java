@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vanguard.webservice.restApi.domain.CapitalGainInput;
+import com.vanguard.webservice.restApi.domain.ProposedTransaction;
 import com.vanguard.webservice.restApi.service.ValidationService;
 
 @RestController
@@ -29,6 +30,15 @@ public class CapitalGainResource {
 	@PostMapping("/capital")
 	@Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public ResponseEntity<List<CapitalGainInput>> createAccount(@RequestBody List<CapitalGainInput> capitalGainInput) {
+		
+		CapitalGainInput cgi = capitalGainInput.get(0);
+		if(cgi.getProposedTransaction().isEmpty()==false) {
+			ProposedTransaction pt = cgi.getProposedTransaction().get(0);
+			if(pt.getAmountSold()!=null && pt.getSellQuantity()!=null)
+			{
+				return new ResponseEntity("DONT SEND ME THIS VALUE!!!!!", HttpStatus.BAD_REQUEST);	
+			}
+		}
 		return new ResponseEntity<List<CapitalGainInput>>(capitalGainInput, HttpStatus.OK);
 	}
 
