@@ -36,7 +36,20 @@ public class CapitalGainResource {
 			ProposedTransaction pt = cgi.getProposedTransaction().get(0);
 			if(pt.getAmountSold()!=null && pt.getSellQuantity()!=null)
 			{
-				return new ResponseEntity("DONT SEND ME THIS VALUE!!!!!", HttpStatus.BAD_REQUEST);	
+				return new ResponseEntity(" Cannot send both the Values", HttpStatus.BAD_REQUEST);	
+			}
+			if(pt.getAmountSold()==null && pt.getSellQuantity()==null) {
+				return new ResponseEntity(" Both The value could be null", HttpStatus.BAD_REQUEST);	
+			}
+			
+			if(cgi.getAccounts().isEmpty() == false) {
+				Accounts account = cgi.getAccounts().get(0);
+				FinancialSecurity fc = account.getFinancialSecurity().get(0);
+				
+				UnrealizedTaxLots lot = fc.getUnrealizedTaxLots().get(0);
+				if(lot.isCovered() == true && lot.getTradeDateTime().isBefore(LocalDate.parse("2011-12-31"))) {
+					return new ResponseEntity("Entered Date is not Covered", HttpStatus.BAD_REQUEST);
+				}
 			}
 		}
 		return new ResponseEntity<List<CapitalGainInput>>(capitalGainInput, HttpStatus.OK);
